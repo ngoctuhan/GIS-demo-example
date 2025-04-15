@@ -1,0 +1,154 @@
+/* Custom styles for Air Quality Monitoring System */
+
+/* Map styles */
+.map-container {
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}
+
+/* Improve popup appearance on satellite map */
+.leaflet-popup-content-wrapper {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 8px;
+}
+
+.leaflet-popup-content {
+    margin: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Make the layer control more visible on satellite background */
+.leaflet-control-layers {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 5px !important;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2) !important;
+    padding: 8px !important;
+}
+
+.leaflet-control-layers-toggle {
+    background-color: white;
+    border-radius: 4px;
+}
+
+.leaflet-control-zoom {
+    border-radius: 5px !important;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+.leaflet-control-zoom a {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Grid cell hover effect */
+.grid-cell {
+    transition: fillOpacity 0.2s ease;
+}
+
+.grid-cell:hover {
+    stroke-width: 2px !important;
+    stroke: #ffffff !important;
+    cursor: pointer;
+}
+
+/* Card styles */
+.card {
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.card-header {
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+}
+
+/* AQI level colors */
+.aqi-good {
+    background-color: #00e400;
+    color: #000;
+}
+
+.aqi-moderate {
+    background-color: #ffff00;
+    color: #000;
+}
+
+.aqi-sensitive {
+    background-color: #ff7e00;
+    color: #fff;
+}
+
+.aqi-unhealthy {
+    background-color: #ff0000;
+    color: #fff;
+}
+
+.aqi-very-unhealthy {
+    background-color: #99004c;
+    color: #fff;
+}
+
+.aqi-hazardous {
+    background-color: #7e0023;
+    color: #fff;
+}
+
+/* Custom table styles */
+.table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f5f5f5;
+    z-index: 1;
+}
+
+/* Zone label styles */
+.zone-label div {
+    white-space: nowrap;
+    font-weight: bold;
+    border: 1px solid rgba(200, 200, 200, 0.5);
+}
+
+/* Panel styles */
+.sidebar-panel {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Chart container */
+.chart-container {
+    position: relative;
+    margin: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .map-container {
+        height: 50vh;
+    }
+    
+    .legend-item span {
+        font-size: 0.8rem;
+    }
+}
+
+/* Spinner for loading data */
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top-color: #007bff;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+} 

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Giám sát Chất lượng Không khí - KCN Phú Nghĩa và Quang Minh</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .map-container {
+            height: 80vh;
+            width: 100%;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        .legend {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .tab-content {
+            margin-top: 20px;
+        }
+        .chart-container {
+            height: 400px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row mt-3">
+            <div class="col-12">
+                <h1 class="text-center">Hệ thống Giám sát Chất lượng Không khí</h1>
+                <p class="text-center">Dữ liệu chi tiết từng ô lưới - Khu Công nghiệp Phú Nghĩa và Quang Minh</p>
+                <div class="text-center mb-2">
+                    <a href="{{ url_for('admin_login') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-shield-lock"></i> Admin Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-view" type="button" role="tab" aria-controls="map-view" aria-selected="true">Bản đồ</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data-view" type="button" role="tab" aria-controls="data-view" aria-selected="false">Dữ liệu chi tiết</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+            <!-- Map View Tab -->
+            <div class="tab-pane fade show active" id="map-view" role="tabpanel" aria-labelledby="map-tab">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5>Thông tin khu vực</h5>
+                            </div>
+                            <div class="card-body">
+                                <select id="zone-selector" class="form-select mb-3">
+                                    <option value="all">Tất cả khu vực</option>
+                                    <option value="Khu Công nghiệp Phú Nghĩa">Khu Công nghiệp Phú Nghĩa</option>
+                                    <option value="Khu Công nghiệp Quang Minh">Khu Công nghiệp Quang Minh</option>
+                                </select>
+                                <div id="zone-info">
+                                    <p><strong>Khu vực:</strong> <span id="selected-zone">Tất cả</span></p>
+                                    <p><strong>AQI trung bình:</strong> <span id="avg-aqi">-</span></p>
+                                    <p><strong>Đánh giá:</strong> <span id="aqi-status">-</span></p>
+                                </div>
+                                <hr>
+                                <div class="alert alert-info small">
+                                    <p><i class="bi bi-info-circle"></i> Bạn có thể chuyển đổi giữa bản đồ vệ tinh và bản đồ đường phố bằng cách sử dụng nút điều khiển ở góc trên bên phải của bản đồ.</p>
+                                </div>
+                                <div class="legend">
+                                    <h6>Chỉ số AQI</h6>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #00e400;"></div>
+                                        <span>Tốt (0-50)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #ffff00;"></div>
+                                        <span>Trung bình (51-100)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #ff7e00;"></div>
+                                        <span>Không lành mạnh cho nhóm nhạy cảm (101-150)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #ff0000;"></div>
+                                        <span>Không lành mạnh (151-200)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #99004c;"></div>
+                                        <span>Rất không lành mạnh (201-300)</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color" style="background-color: #7e0023;"></div>
+                                        <span>Nguy hại (>300)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="map-container mt-3">
+                            <div id="map"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data View Tab -->
+            <div class="tab-pane fade" id="data-view" role="tabpanel" aria-labelledby="data-tab">
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Lọc dữ liệu</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="detail-zone-selector" class="form-label">Khu vực</label>
+                                    <select id="detail-zone-selector" class="form-select">
+                                        <option value="Khu Công nghiệp Phú Nghĩa">Khu Công nghiệp Phú Nghĩa</option>
+                                        <option value="Khu Công nghiệp Quang Minh">Khu Công nghiệp Quang Minh</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="date-range" class="form-label">Khoảng thời gian</label>
+                                    <select id="date-range" class="form-select">
+                                        <option value="7">7 ngày gần đây</option>
+                                        <option value="14">14 ngày gần đây</option>
+                                        <option value="30">30 ngày gần đây</option>
+                                    </select>
+                                </div>
+                                <button id="update-chart" class="btn btn-primary">Cập nhật</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Biểu đồ AQI theo thời gian</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="aqi-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Chi tiết các chất ô nhiễm</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="pollutants-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4 mb-5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Bảng dữ liệu chi tiết</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped" id="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Ngày</th>
+                                                <th>AQI</th>
+                                                <th>PM2.5</th>
+                                                <th>PM10</th>
+                                                <th>O3</th>
+                                                <th>NO2</th>
+                                                <th>SO2</th>
+                                                <th>CO</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Data will be populated here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 
