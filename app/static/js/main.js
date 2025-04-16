@@ -178,6 +178,8 @@ function renderMap(selectedZone) {
             cellPolygon.bindPopup(`
                 <div style="min-width: 200px;">
                     <strong>Khu vực:</strong> ${zone.name}<br>
+                    <strong>ID ô:</strong> ${cell.id}<br>
+                    <strong>Tọa độ:</strong> ${cell.lat.toFixed(6)}, ${cell.lng.toFixed(6)}<br>
                     <strong>AQI:</strong> ${cell.aqi}<br>
                     <strong>Đánh giá:</strong> ${getAqiDescription(cell.aqi)}
                 </div>
