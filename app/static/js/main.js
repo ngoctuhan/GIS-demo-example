@@ -412,6 +412,12 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchAirQualityData();
     fetchDailyData();
     
+    // Set initial active state for map view
+    document.getElementById('show-map').classList.add('active');
+    document.getElementById('show-data').classList.remove('active');
+    document.getElementById('map-view').style.display = 'block';
+    document.getElementById('data-view').style.display = 'none';
+    
     // Zone selector change event (Map view)
     document.getElementById('zone-selector').addEventListener('change', (e) => {
         renderMap(e.target.value);
@@ -419,6 +425,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update button click event (Data view)
     document.getElementById('update-chart').addEventListener('click', () => {
+        updateCharts();
+        updateDataTable();
+    });
+    
+    // Menu navigation
+    document.getElementById('show-map').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('map-view').style.display = 'block';
+        document.getElementById('data-view').style.display = 'none';
+        document.getElementById('show-map').classList.add('active');
+        document.getElementById('show-data').classList.remove('active');
+    });
+    
+    document.getElementById('show-data').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('map-view').style.display = 'none';
+        document.getElementById('data-view').style.display = 'block';
+        document.getElementById('show-map').classList.remove('active');
+        document.getElementById('show-data').classList.add('active');
+        // Update charts and tables when switching to data view
         updateCharts();
         updateDataTable();
     });

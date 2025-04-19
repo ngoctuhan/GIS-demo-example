@@ -44,176 +44,264 @@
             height: 400px;
             margin-bottom: 30px;
         }
+        /* PTIT Header Styles */
+        .ptit-header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 15px 0;
+            border-top: 3px solid #d61921;
+        }
+        .ptit-logo {
+            height: 60px;
+        }
+        .ptit-nav {
+            background-color: #d61921;
+            color: white;
+        }
+        .ptit-nav .nav-link {
+            color: white;
+            font-weight: 500;
+            padding: 10px 15px;
+            border-right: 1px solid rgba(255,255,255,0.2);
+        }
+        .ptit-nav .nav-link:hover {
+            background-color: #b01419;
+        }
+        .ptit-nav .nav-link.active {
+            background-color: #a01016;
+            font-weight: bold;
+            position: relative;
+        }
+        .ptit-nav .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: white;
+        }
+        .social-icons a {
+            color: #d61921;
+            margin-left: 10px;
+            font-size: 1.2rem;
+        }
+        .logo-text {
+            color: #d61921;
+            font-weight: bold;
+        }
+        .ptit-box {
+            background-color: #d61921;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 5px;
+            width: 60px;
+            height: 60px;
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
     </style>
 </head>
 <body>
+    <!-- PTIT Style Header -->
+    <header class="ptit-header">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-4 d-flex align-items-center">
+                    <img src="{{ url_for('static', filename='images/logo-ptit.svg') }}" alt="PTIT Logo" class="ptit-logo me-3" style="height: 60px;">
+                
+                </div>
+                <div class="col-md-6">
+                    <h5 class="text-center mb-0 logo-text">HỆ THỐNG GIÁM SÁT CHẤT LƯỢNG KHÔNG KHÍ</h5>
+                    <p class="text-center mb-0 text-secondary small">Dữ liệu chi tiết từng ô lưới - Khu Công nghiệp Phú Nghĩa và Quang Minh</p>
+                </div>
+                <div class="col-md-2 text-end">
+                    <div class="social-icons">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-youtube"></i></a>
+                        <a href="{{ url_for('admin_login') }}"><i class="bi bi-shield-lock"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <nav class="ptit-nav mb-3">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" id="show-map">
+                                <i class="bi bi-map-fill me-1"></i> Bản đồ chi tiết
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="show-data">
+                                <i class="bi bi-bar-chart-fill me-1"></i> Dữ liệu chi tiết
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-info-circle-fill me-1"></i> Hướng dẫn
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-envelope-fill me-1"></i> Liên hệ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <div class="container-fluid">
-        <div class="row mt-3">
-            <div class="col-12">
-                <h1 class="text-center">Hệ thống Giám sát Chất lượng Không khí</h1>
-                <p class="text-center">Dữ liệu chi tiết từng ô lưới - Khu Công nghiệp Phú Nghĩa và Quang Minh</p>
-                <div class="text-center mb-2">
-                    <a href="{{ url_for('admin_login') }}" class="btn btn-sm btn-outline-primary">
-                        <i class="bi bi-shield-lock"></i> Admin Dashboard
-                    </a>
+        <div id="map-view">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5>Thông tin khu vực</h5>
+                        </div>
+                        <div class="card-body">
+                            <select id="zone-selector" class="form-select mb-3">
+                                <option value="all">Tất cả khu vực</option>
+                                <option value="Khu Công nghiệp Phú Nghĩa">Khu Công nghiệp Phú Nghĩa</option>
+                                <option value="Khu Công nghiệp Quang Minh">Khu Công nghiệp Quang Minh</option>
+                            </select>
+                            <div id="zone-info">
+                                <p><strong>Khu vực:</strong> <span id="selected-zone">Tất cả</span></p>
+                                <p><strong>AQI trung bình:</strong> <span id="avg-aqi">-</span></p>
+                                <p><strong>Đánh giá:</strong> <span id="aqi-status">-</span></p>
+                            </div>
+                            <hr>
+                            <div class="alert alert-info small">
+                                <p><i class="bi bi-info-circle"></i> Bạn có thể chuyển đổi giữa bản đồ vệ tinh và bản đồ đường phố bằng cách sử dụng nút điều khiển ở góc trên bên phải của bản đồ.</p>
+                            </div>
+                            <div class="legend">
+                                <h6>Chỉ số AQI</h6>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #00e400;"></div>
+                                    <span>Tốt (0-50)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #ffff00;"></div>
+                                    <span>Trung bình (51-100)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #ff7e00;"></div>
+                                    <span>Không lành mạnh cho nhóm nhạy cảm (101-150)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #ff0000;"></div>
+                                    <span>Không lành mạnh (151-200)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #99004c;"></div>
+                                    <span>Rất không lành mạnh (201-300)</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #7e0023;"></div>
+                                    <span>Nguy hại (>300)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="map-container mt-3">
+                        <div id="map"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="map-tab" data-bs-toggle="tab" data-bs-target="#map-view" type="button" role="tab" aria-controls="map-view" aria-selected="true">Bản đồ</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="data-tab" data-bs-toggle="tab" data-bs-target="#data-view" type="button" role="tab" aria-controls="data-view" aria-selected="false">Dữ liệu chi tiết</button>
-            </li>
-        </ul>
-
-        <div class="tab-content" id="myTabContent">
-            <!-- Map View Tab -->
-            <div class="tab-pane fade show active" id="map-view" role="tabpanel" aria-labelledby="map-tab">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="card mt-3">
-                            <div class="card-header">
-                                <h5>Thông tin khu vực</h5>
-                            </div>
-                            <div class="card-body">
-                                <select id="zone-selector" class="form-select mb-3">
-                                    <option value="all">Tất cả khu vực</option>
+        <div id="data-view" style="display: none;">
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Lọc dữ liệu</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label for="detail-zone-selector" class="form-label">Khu vực</label>
+                                <select id="detail-zone-selector" class="form-select">
                                     <option value="Khu Công nghiệp Phú Nghĩa">Khu Công nghiệp Phú Nghĩa</option>
                                     <option value="Khu Công nghiệp Quang Minh">Khu Công nghiệp Quang Minh</option>
                                 </select>
-                                <div id="zone-info">
-                                    <p><strong>Khu vực:</strong> <span id="selected-zone">Tất cả</span></p>
-                                    <p><strong>AQI trung bình:</strong> <span id="avg-aqi">-</span></p>
-                                    <p><strong>Đánh giá:</strong> <span id="aqi-status">-</span></p>
-                                </div>
-                                <hr>
-                                <div class="alert alert-info small">
-                                    <p><i class="bi bi-info-circle"></i> Bạn có thể chuyển đổi giữa bản đồ vệ tinh và bản đồ đường phố bằng cách sử dụng nút điều khiển ở góc trên bên phải của bản đồ.</p>
-                                </div>
-                                <div class="legend">
-                                    <h6>Chỉ số AQI</h6>
-                                    <div class="legend-item">
-                                        <div class="legend-color" style="background-color: #00e400;"></div>
-                                        <span>Tốt (0-50)</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color" style="background-color: #ffff00;"></div>
-                                        <span>Trung bình (51-100)</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color" style="background-color: #ff7e00;"></div>
-                                        <span>Không lành mạnh cho nhóm nhạy cảm (101-150)</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color" style="background-color: #ff0000;"></div>
-                                        <span>Không lành mạnh (151-200)</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color" style="background-color: #99004c;"></div>
-                                        <span>Rất không lành mạnh (201-300)</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color" style="background-color: #7e0023;"></div>
-                                        <span>Nguy hại (>300)</span>
-                                    </div>
-                                </div>
                             </div>
+                            <div class="mb-3">
+                                <label for="date-range" class="form-label">Khoảng thời gian</label>
+                                <select id="date-range" class="form-select">
+                                    <option value="7">7 ngày gần đây</option>
+                                    <option value="14">14 ngày gần đây</option>
+                                    <option value="30">30 ngày gần đây</option>
+                                </select>
+                            </div>
+                            <button id="update-chart" class="btn btn-primary">Cập nhật</button>
                         </div>
                     </div>
-                    <div class="col-md-9">
-                        <div class="map-container mt-3">
-                            <div id="map"></div>
+                </div>
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Biểu đồ AQI theo thời gian</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="aqi-chart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Data View Tab -->
-            <div class="tab-pane fade" id="data-view" role="tabpanel" aria-labelledby="data-tab">
-                <div class="row mt-3">
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Lọc dữ liệu</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label for="detail-zone-selector" class="form-label">Khu vực</label>
-                                    <select id="detail-zone-selector" class="form-select">
-                                        <option value="Khu Công nghiệp Phú Nghĩa">Khu Công nghiệp Phú Nghĩa</option>
-                                        <option value="Khu Công nghiệp Quang Minh">Khu Công nghiệp Quang Minh</option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="date-range" class="form-label">Khoảng thời gian</label>
-                                    <select id="date-range" class="form-select">
-                                        <option value="7">7 ngày gần đây</option>
-                                        <option value="14">14 ngày gần đây</option>
-                                        <option value="30">30 ngày gần đây</option>
-                                    </select>
-                                </div>
-                                <button id="update-chart" class="btn btn-primary">Cập nhật</button>
-                            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Chi tiết các chất ô nhiễm</h5>
                         </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Biểu đồ AQI theo thời gian</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="chart-container">
-                                    <canvas id="aqi-chart"></canvas>
-                                </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="pollutants-chart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Chi tiết các chất ô nhiễm</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="chart-container">
-                                    <canvas id="pollutants-chart"></canvas>
-                                </div>
-                            </div>
+            <div class="row mt-4 mb-5">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Bảng dữ liệu chi tiết</h5>
                         </div>
-                    </div>
-                </div>
-
-                <div class="row mt-4 mb-5">
-                    <div class="col-12">
-                        <div class="card">
-                            <div class="card-header">
-                                <h5>Bảng dữ liệu chi tiết</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped" id="data-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Ngày</th>
-                                                <th>AQI</th>
-                                                <th>PM2.5</th>
-                                                <th>PM10</th>
-                                                <th>O3</th>
-                                                <th>NO2</th>
-                                                <th>SO2</th>
-                                                <th>CO</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <!-- Data will be populated here -->
-                                        </tbody>
-                                    </table>
-                                </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Ngày</th>
+                                            <th>AQI</th>
+                                            <th>PM2.5</th>
+                                            <th>PM10</th>
+                                            <th>O3</th>
+                                            <th>NO2</th>
+                                            <th>SO2</th>
+                                            <th>CO</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Data will be populated here -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
